@@ -1,0 +1,18 @@
+{
+  "_": {
+    "test2": "Đây là test <0>{{x}}</0> hic",
+    "test": "nothing xx",
+    "article": {
+      "content": "Đây là nội dung bài viết",
+      "readmore": "xem thêm"
+    },
+    "react": {
+      "like": "thích",
+      "dislike": "chán",
+      "comment": "Viết bình luận..."
+    }
+  },
+  "common": {
+    "test": "test x"
+  }
+}

@@ -1,0 +1,17 @@
+{
+    "_": {
+      "test": "nothing xx",
+      "article": {
+        "content": "This is article content",
+        "readmore": "read more"
+      },
+      "react": {
+        "like": "like",
+        "dislike": "dislike",
+        "comment": "Write your comment..."
+      }
+    },
+    "common": {
+      "test": "test x"
+    }
+  }
