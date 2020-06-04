@@ -1,14 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
-import {Card, Row, Form, Input, Button, Layout, Col, Checkbox} from 'antd'
+import {Card, Row, Form, Input, Button, Col, Checkbox} from 'antd'
 import { Link } from '@reach/router'
-const Login = (props) => {
+const Signup = (props) => {
     const layout = {
         labelCol: { span: 4 },
         wrapperCol: { span: 14 },
     }
     return (
-        <StyledLogin>
+        <StyledSignup>
             <Row justify="center" align="middle">
                 <Col span={8}>
                     <Card>
@@ -20,23 +20,25 @@ const Login = (props) => {
                                 <Input.Password placeholder="password"/>
                             </Form.Item>
                             <Form.Item>
-                                <Checkbox>Remember me</Checkbox>
-                                <Link to="/signup">
-                                    <Button type="link">I don't have account</Button>
+                                <Input.Password placeholder="password"/>
+                            </Form.Item>
+                            <Form.Item>
+                                <Link to="/login">
+                                    <Button type="link">I already had account</Button>
                                 </Link>
                             </Form.Item>
                             <Form.Item>
-                                <Button type="primary">Login</Button>
+                                <Button type="primary">Signup</Button>
                             </Form.Item>
                         </Form>
                     </Card>
                 </Col>
                 
             </Row>
-        </StyledLogin>
+        </StyledSignup>
     )
 }
-export default Login
+export default Signup
 
-const StyledLogin = styled.div`
+const StyledSignup = styled.div`
 `

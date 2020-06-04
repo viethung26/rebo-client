@@ -1,34 +1,46 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Button, Tooltip } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Table } from 'antd';
+import { ColumnProps } from 'antd/es/table';
+
+interface User {
+  key: number,
+  name: string;
+  age: number
+}
+
+const columns: ColumnProps<User>[] = [{
+  key: 'name',
+  title: <p title="Name ab">Name</p>,
+  dataIndex: 'name',
+},
+    {
+        key: 'age',
+        title: 'Age',
+        dataIndex: 'age',
+        sorter: (a, b) => a.age - b.age,
+    }
+];
+
+const data: User[] = [{
+  key: 0,
+  name: 'Jack',
+  age: 20
+},
+{
+    key: 1,
+    name: 'Hung',
+    age: 22
+  }
+];
 const Test = (props) => {
     return (
         <StyledTest>
-              <Tooltip title="search">
-                <Button type="primary" icon={<SearchOutlined />} />
-                </Tooltip>
-                <Button type="primary" shape="circle">
-                A
-                </Button>
-                <Button type="primary" loading={{delay:3000}} icon={<SearchOutlined />}>
-                Search
-                </Button>
-                <Tooltip title="search">
-                <Button shape="circle" icon={<SearchOutlined />} />
-                </Tooltip>
-                <Button icon={<SearchOutlined />}>Search</Button>
-                <br />
-                <Tooltip title="search">
-                <Button shape="circle" icon={<SearchOutlined />} />
-                </Tooltip>
-                <Button icon={<SearchOutlined />}>Search</Button>
-                <Tooltip title="search">
-                <Button type="dashed" shape="circle" icon={<SearchOutlined />} />
-                </Tooltip>
-                <Button type="dashed" icon={<SearchOutlined />}>
-                Search
-                </Button>
+          <Table<User> dataSource={data} columns={columns}>
+            {/* <Table.Column<User> key="name" title="Name" dataIndex="name" />
+            <Table.Column<User> key="age" title="Age" dataIndex="age" sorter={(a, b) => a.age - b.age}/> */}
+        </Table>
+
         </StyledTest>
     )
 }

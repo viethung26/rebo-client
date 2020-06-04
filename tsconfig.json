@@ -22,9 +22,9 @@
     "paths": {
       "@m/*": ["modules/*"],
       "@c/*": ["components/*"],
-      "@p/*": ["plugs/*"],
-      "@Lang/*": ["plugs/Lang/*"]
-    },
+      "@Lang/*": ["plugs/Lang/*"],
+      "@p/*": ["plugs/*"]
+    }
   },
   "include": [
     "src"

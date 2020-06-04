@@ -2,23 +2,23 @@ import React from 'react'
 import { ThemeProvider} from 'styled-components'
 import {LangProvider} from '@p/Lang'
 import theme, { GlobalStyle } from '@p/UI/theme'
-import Home from 'Home'
+import Feed from '@m/Feed'
 import { Router } from '@reach/router'
-import Login from 'Login'
-import Global from 'Feed/Global'
-import Book from 'Feed/Book'
-import Signup from 'Signup'
-import Profile from 'Profile'
+import Login from '@m/SignUpIn/Login'
+import Signup from '@m/SignUpIn/Signup'
+import Profile from '@m/Profile/Profile'
+import Test from 'Test'
 function App() {
 	return (
 		<LangProvider>
 			<ThemeProvider theme={theme}>
 				<GlobalStyle/>
 				<Router>
-					<Home path="/"/>
+					<Feed path="/"/>
 					<Login path="/login"/>
 					<Signup path="/signup"/>
 					<Profile path="/profile/:name"/>
+					<Test path="/test"/>
 				</Router>
 
 				

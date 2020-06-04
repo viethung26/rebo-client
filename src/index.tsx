@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import { StyleSheetManager } from 'styled-components'
 import i18next from 'i18next'
-import {I18nextProvider} from 'react-i18next'
+import { I18nextProvider } from 'react-i18next'
 import en from './configs/en.json'
 import vi from './configs/vi.json'
 
