@@ -5,7 +5,9 @@ import { Button, Typography, Comment, Avatar, Tooltip, Input, List, Divider } fr
 import { CommentOutlined, LikeFilled, LikeOutlined } from '@ant-design/icons'
 import { useRecoilValue } from 'recoil'
 import { activeUserState } from 'stores'
-import {io, ioListener} from '../../sockets'
+import { io, ioListener } from '../../sockets'
+import moment from 'moment'
+
 const { Text } = Typography
 const getCommentData = (arr: any[]) => {
     return arr.map((comment: any) => ({
@@ -15,11 +17,11 @@ const getCommentData = (arr: any[]) => {
                     onClick: () => console.info('9779 click'),
                 })}
             </Tooltip>
-            <span className="comment-action">{10}</span>
+            {/* <span className="comment-action">{10}</span> */}
         </span>],
         author: <a href="#">{comment?.author?.username}</a>,
         datetime: <Tooltip title={"ngay"}>
-            <span>{"20-12-2019"}</span>
+            <span>{moment(comment.updatedAt).fromNow()}</span>
         </Tooltip>,
         content:
             <p>
@@ -29,64 +31,54 @@ const getCommentData = (arr: any[]) => {
     }))
 }
 const Footer = (props: any) => {
-	const activeUser = useRecoilValue(activeUserState) || {}
+    const activeUser = useRecoilValue(activeUserState) || {}
     const [commentOpen, setCommentOpen] = useState(false)
-    const [newComments, setNewComments] = useState([])
     const [comment, setComment] = useState("")
-    const [isVoted, setVoted] = useState(undefined)
-    const { t, articleID, votes = [], comments } = props
-    const commentList = getCommentData([...comments, ...newComments])
+    const { t, articleID, votes = [], comments, onLike, onComment } = props
+    const commentList = getCommentData(comments)
+    const isVoted = votes.includes(activeUser._id)
     const handleLike = async () => {
-        console.info('9779 like')
-        fetch(`/api/v1/article/like/${articleID}`, {
-            method: 'PUT'
-        }).then(res => res.json()).then(res => {
-            console.info('9779 res', res, activeUser)
-            io.emit('article-like', articleID)
-            setVoted(!isVoted)
-        })
+        io.emit('article-like', { a_id: articleID })
+        onLike()
+        // fetch(`/api/v1/article/like/${articleID}`, {
+        //     method: 'PUT'
+        // }).then(res => res.json()).then(res => {
+        //     console.info('9779 res', res, activeUser)
+        //     setVoted(!isVoted)
+        // })
     }
-    const handlePostComment = async (e) => {
+    const handleComment = async (e) => {
         if (e.keyCode === 13) {
             const content = comment.trim()
             if (content !== "") {
                 setComment("")
                 console.info('9779 post comment', content)
-                fetch("/api/v1/comment", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        content,
-                        article: articleID
-                    })
-                }).then(res => res.json())
-                    .then(res => {
-                        if (res) {
-                            setNewComments([...newComments, {
-                                author: activeUser,
-                                content: res.content
-                            }])
-                        }
-                    })
-
+                io.emit('article-comment', { a_id: articleID, content })
+                onComment({content, article: articleID, author: activeUser, createdAt: new Date().toISOString()})
+                // fetch("/api/v1/comment", {
+                //     method: "POST",
+                //     headers: { "Content-Type": "application/json" },
+                //     body: JSON.stringify({
+                //         content,
+                //         article: articleID
+                //     })
+                // }).then(res => res.json())
+                //     .then(res => {
+                //         if (res) {
+                //             setNewComments([...newComments, {
+                //                 author: activeUser,
+                //                 content: res.content
+                //             }])
+                //         }
+                //     })
             }
         }
     }
-    useEffect(() => {
-        console.info('9779 data')
-        io.on(`data-${articleID}`, data=>console.info('9779 d', data))
-        // ioListener.push((data) => {
-        //     console.info('9779 data2', data)
-        // } )
-        if (votes.includes(activeUser._id?.toString()) && typeof isVoted === 'undefined') {
-            setVoted(true)
-        }
-    }, [])
     return (
         <StyledFooter>
             <StyledGroupButton>
-                <Button onClick={handleLike}>{isVoted ? <LikeFilled /> : <LikeOutlined/>}<Text>{votes.length}</Text></Button>
-                <Button onClick={() => setCommentOpen(!commentOpen)}><CommentOutlined /><Text>{(comments?.length || 0) + newComments.length}</Text></Button>
+                <Button onClick={handleLike}>{isVoted ? <LikeFilled /> : <LikeOutlined />}<Text>{votes.length}</Text></Button>
+                <Button onClick={() => setCommentOpen(!commentOpen)}><CommentOutlined /><Text>{(comments?.length || 0)}</Text></Button>
             </StyledGroupButton>
             {commentOpen && <>
                 <Divider />
@@ -117,7 +109,7 @@ const Footer = (props: any) => {
                 />
                 <Comment
                     avatar={<Avatar src="https://i1.wp.com/meovatcuocsong.vn/wp-content/uploads/2018/06/anh-dai-dien-facebook-de-thuong5.jpg?w=770&ssl=1" />}
-                    content={<Input placeholder="Write your comment" value={comment} onChange={e => setComment(e.target.value)} onKeyDown={handlePostComment} />}
+                    content={<Input placeholder="Write your comment" value={comment} onChange={e => setComment(e.target.value)} onKeyDown={handleComment} />}
                 />
             </>
             }

@@ -20,23 +20,25 @@ function App(props) {
 	const [activeUser, setActiveUser] = useRecoilState(activeUserState)
 	useEffect(() => {
 		// io.emit('message', 'hi')
-		io.connect()
-		console.info('9779 app mount')
+		if (!io.connected) {
+			console.warn('9779 connect io')
+			io.connect()
+		}
+		console.warn('9779 app mount')
 		if (!activeUser) {
 			fetch(`/api/v1/user/me`, {
 				method: 'GET'
 			}).then(res => res.json()
 			).then(res => {
 				if (res && !res.error) {
-					console.info('9779 user', res)
 					setActiveUser(res)
 				}
 			})
 		}
 		return function () {
-			console.info('9779 app stop')
+			console.warn('9779 app stop')
 		}
-	}, [])
+	})
 	return (
 		<LangProvider>
 			<ThemeProvider theme={theme}>

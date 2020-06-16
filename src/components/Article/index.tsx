@@ -9,27 +9,51 @@ import { Link } from '@reach/router'
 import { io } from '../../sockets'
 import VisibilitySensor from 'react-visibility-sensor'
 import { pushOrPull } from 'utils'
+import { useRecoilValue } from 'recoil'
+import { activeUserState } from 'stores'
+let a = 0
 const Article = (props: any) => {
     const { Title, Text } = Typography
-    const { Header, Footer, Sider } = Layout
     const { article, onUpdate } = props
-
-    const handleChange = isVisible => {
+    const activeUser = useRecoilValue(activeUserState) || {}
+    const handleChangeVisible = isVisible => {
         if (isVisible) {
             io.emit('article-join', {a_id: article._id, a_update: article.updatedAt})
         } else {
-            io.emit('article-leave', article._id)
+            io.emit('article-leave', {a_id: article._id})
+        }
+    }
+    const updateLike = (userID = activeUser?._id) => {
+        if (userID) {
+            const votes = pushOrPull(article.votes, userID)
+            onUpdate({...article, votes, a: a++})
+        }   
+    }
+    const updateComment = (comment) => {
+        if (comment) {
+            const comments = [...article.comments]
+            comments.push(comment)
+            onUpdate({...article, comments})
         }
     }
     useEffect(() => {
         io.on(`like-${article._id}`, userID => {
-            console.info('9779 mot nguoi like ', article)
-            const votes = pushOrPull(article.votes, userID)
-            onUpdate({...article, votes})
+            updateLike(userID)
         })
+        io.on(`comment-${article._id}`, newComment => {
+            updateComment(newComment)
+        })
+        io.on(`update-${article._id}`, newArticle => {
+            onUpdate(newArticle)
+        })
+        return () => {
+            io.off(`like-${article._id}`)
+            io.off(`update-${article._id}`)
+            io.off(`comment-${article._id}`)
+        }
     })
     return (
-        <VisibilitySensor onChange={handleChange} partialVisibility={true}>
+        <VisibilitySensor onChange={handleChangeVisible} partialVisibility={true}>
             <StyledArticle>
                 <Card>
                     <Row align="middle" gutter={16}>
@@ -68,7 +92,7 @@ const Article = (props: any) => {
                         </Col>
                     </Row>
                     <Content content={article.content} />
-                    <FooterArticle articleID={article._id} votes={article?.votes} comments={article.comments} />
+                    <FooterArticle articleID={article._id} votes={article?.votes} comments={article.comments} onLike={updateLike} onComment={updateComment}/>
                 </Card>
                 {/* <Top/> */}
             </StyledArticle>

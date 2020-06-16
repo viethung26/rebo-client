@@ -8,6 +8,9 @@ import { I18nextProvider } from 'react-i18next'
 import en from './configs/en.json'
 import vi from './configs/vi.json'
 import './sockets'
+import moment from 'moment'
+import 'moment/locale/vi'
+moment.locale('vi')
 // io.on('connect_timeout', () => {
 //   console.info('9779 connect timeout')
 // })
