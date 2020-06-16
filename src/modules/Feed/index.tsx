@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import NewPost from '@m/Layout/NewPost'
+import NewPost from '@c/NewPost'
 import Article from '@c/Article'
 import ActionBar from '@m/Layout/ActionBar'
 import Header from '@c/Header'
@@ -9,8 +9,24 @@ import { Router } from '@reach/router'
 import Global from '@m/Feed/Global'
 import Book from '@m/Feed/Book'
 import Profile from '@m/Profile/Profile'
+import { useRecoilState } from 'recoil'
+import { bookListState } from 'stores'
 
 const Home = (props) => {
+    const [bookList, setBookList] = useRecoilState(bookListState)
+    useEffect(() => {
+        if (bookList.length === 0) {
+            fetch("/api/v1/book/", {
+                method: "GET"
+            }).then(res => res.json())
+            .then(res => {
+                setBookList(res)
+            })
+        }
+        return function() {
+            console.info('9779 dismount')
+        }
+    }, [])
     return (
         <StyledHome>
             <Affix offsetTop={0}>

@@ -1,4 +1,9 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Folder Structure
+-   Modules
+    All views and popup are combined from Components
+- Components
+    From UI
 
 ## Available Scripts
 

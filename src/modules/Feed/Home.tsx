@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import NewPost from '@m/Layout/NewPost'
 import Article from '@c/Article'
 import ActionBar from '@m/Layout/ActionBar'
 import Header from '@c/Header'

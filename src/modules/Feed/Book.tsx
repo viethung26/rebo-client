@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import NewPost from '@m/Layout/NewPost'
+import NewPost from '@c/NewPost'
 import Article from '@c/Article'
 
 const Book = (props) => {

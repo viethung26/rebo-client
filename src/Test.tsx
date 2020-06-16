@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { Table } from 'antd';
+import { Table, Button } from 'antd';
 import { ColumnProps } from 'antd/es/table';
+import { useRecoilState } from 'recoil';
+import { TestAtom } from 'stores/Test';
 
 interface User {
   key: number,
@@ -34,13 +36,25 @@ const data: User[] = [{
   }
 ];
 const Test = (props) => {
+    const [save1, setS1] = useState(0)
+    const [save2, setS2] = useState(2)
+    useEffect(() => {
+      console.info('9779 effect')
+    })
+    const increase = () => {
+      setS1(save1+1)
+      setS2(save2+1)
+    }
     return (
         <StyledTest>
+          <p onClick={increase}>sav1: {save1}</p>
+          <p>sav2: {save2}</p>
           <Table<User> dataSource={data} columns={columns}>
             {/* <Table.Column<User> key="name" title="Name" dataIndex="name" />
             <Table.Column<User> key="age" title="Age" dataIndex="age" sorter={(a, b) => a.age - b.age}/> */}
         </Table>
-
+            <Button> adsfijoasdfj</Button>
+            <Button type="primary"> adsfijoasdfj</Button>
         </StyledTest>
     )
 }
