@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { withTranslation } from 'react-i18next'
 import UIModal from '@p/UI/Modal'
 import UIButton from '@p/UI/Button'
 import { Modal, Button, Input, Select, Form } from 'antd'
 import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil'
-import { addBookOpenState, bookListState, articleModalOpenState } from 'stores'
+import { addBookOpenState, bookListState, articleModalOpenState, articleModalStatusState } from 'stores'
 const keyMaps = ["b", "i"]
 const metaFunction = (key: string) => {
     console.info('9779 key', key)
@@ -25,64 +25,114 @@ const metaFunction = (key: string) => {
 //     document.execCommand("bold")
 // }
 let flag
-const saveDraft = (el) => {
+const saveDraft = (el, editMode = false) => {
     clearTimeout(flag)
+    const key = editMode ? "REBO_DRAFT_EDIT_CONTENT" : "REBO_DRAFT_CONTENT"
     flag = setTimeout(() => {
         const text = el.innerHTML
-        localStorage.setItem("REBO_DRAFT_CONTENT", text)
+        localStorage.setItem(key, text)
         console.info('9779 save', text)
     }, 300)
 }
-const removeDraft = () => {
-    localStorage.removeItem("REBO_DRAFT_CONTENT")
+const removeDraft = (editMode = false) => {
+    const key = editMode ? "REBO_DRAFT_EDIT_CONTENT" : "REBO_DRAFT_CONTENT"
+    localStorage.removeItem(key)
 }
-const getDraft = () => {
-    return localStorage.getItem("REBO_DRAFT_CONTENT") || ""
+const getDraft = (editMode = false) => {
+    const key = editMode ? "REBO_DRAFT_EDIT_CONTENT" : "REBO_DRAFT_CONTENT"
+    return localStorage.getItem(key) || ""
 }
-const NewPost = (props: any) => {
+const ArticleModal = (props: any) => {
     const [posting, setPosting] = useState(false)
     const [form] = Form.useForm()
     const bookList = useRecoilValue(bookListState)
     const setBookOpen = useSetRecoilState(addBookOpenState)
+    const [status, setStatus] = useRecoilState(articleModalStatusState)
     const [articleOpen, setArticleOpen] = useRecoilState(articleModalOpenState)
-    const textBoxRef = useRef(null)
-
-    const closeArticleModal = () => setArticleOpen(false)
+    const contentRef = useRef(null)
+    window['abc'] = status
+    const { t } = props
+    const { Option } = Select
+    const {isEditing: editMode, article} = status
+    const closeArticleModal = () => {
+        setStatus({isEditing: false, article: null, updateCallback: null})
+        setArticleOpen(false)
+        form.resetFields()
+    }
     const handleKeyDown = (e) => {
         const key = e.key.toLowerCase()
         if (e.metaKey && keyMaps.includes(key)) {
             e.preventDefault()
             metaFunction(key)
         }
-        saveDraft(textBoxRef?.current)
+        saveDraft(contentRef?.current, editMode)
     }
-    const { t } = props
-    const { Option } = Select
+    
     const handlePost = () => {
-        //9779 continue using api to post new article
-        if (form.isFieldsTouched(true) && form.getFieldsError().filter(({ errors }) => errors.length).length === 0) {
+        if (editMode || (form.isFieldsTouched(true) && form.getFieldsError().filter(({ errors }) => errors.length).length === 0)) {
             const title = form.getFieldValue("title")
-            const content = getDraft()
+            const content = contentRef.current?.innerHTML || getDraft(editMode)
             const book = form.getFieldValue("book")
             const type = form.getFieldValue("type")
             console.info('9779 post', type, title, content)
-            setPosting(true)
-            fetch("/api/v1/article", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ title, content, book, type })
-            }).then(res => {
-                setPosting(false)
-                removeDraft()
-                return res.json()
-            }).then(res => console.info('9779 res', res))
-        }
+            if (!editMode) {
+                setPosting(true)
+                fetch("/api/v1/article", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ title, content, book, type })
+                }).then(res => {
+                    setPosting(false)
+                    removeDraft(editMode)
+                    return res.json()
+                }).then(res => {
+                    closeArticleModal()
+                })
+            } else {
+                setPosting(true)
+                fetch(`/api/v1/article/${article._id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ content })
+                }).then(res => {
+                    setPosting(false)
+                    removeDraft(editMode)
+                    return res.json()
+                }).then(res => {
+                    const {content} = res
+                    if (content && typeof status.updateCallback === 'function') {
+                        status.updateCallback({...article, content})
+                    }
+                    closeArticleModal()
+                })
+            }
 
+        }
     }
+    const updateByEditing = () => {
+        const {title, book, type, content} = article
+        console.info('9779 s', article)
+        form.setFieldsValue({title, book: book._id, type})
+        const contentBox = contentRef.current
+        
+        // if (contentBox) {
+        //     setTimeout(() => {
+        //         contentBox.innerHTML = content
+        //     }, 1000)
+        // }
+    }
+    useEffect(() => {
+        if (editMode) {
+            console.info('9779 edit', contentRef)
+            updateByEditing()
+        }
+    }, [status])
     return (
-        <Modal bodyStyle={{ padding: 0 }} title={t('New Post')} visible={articleOpen} onOk={closeArticleModal} onCancel={closeArticleModal} width={800} footer={null}>
+        <Modal bodyStyle={{ padding: 0 }} title={editMode ? t('Edit Post') : t('New Post')} visible={articleOpen} onOk={closeArticleModal} onCancel={closeArticleModal} width={800} footer={null}>
             <Form form={form} name="article">
                 <Form.Item
                     name="title"
@@ -93,7 +143,7 @@ const NewPost = (props: any) => {
                         }
                     ]}
                 >
-                    <Input addonBefore="Title" />
+                    <Input addonBefore="Title" disabled={editMode}/>
                 </Form.Item>
                 <Form.Item
                     name="book"
@@ -111,6 +161,7 @@ const NewPost = (props: any) => {
                         style={{ width: "100%" }}
                         optionLabelProp="label"
                         options={bookList.map(book => ({ label: book.title, value: book._id }))}
+                        disabled={editMode}
                     />
                 </Form.Item>
                 <Form.Item
@@ -126,6 +177,7 @@ const NewPost = (props: any) => {
                         placeholder="Chọn nội dung"
                         optionLabelProp="label"
                         showSearch allowClear
+                        disabled={editMode}
                         style={{ width: "100%" }}
                     >
                         <Option value="Review">Review</Option>
@@ -134,7 +186,7 @@ const NewPost = (props: any) => {
                         <Option value="Others">Others</Option>
                     </Select>
                 </Form.Item>
-                <StyledContent placeholder="Nhấp vào đây để viết nội dung" ref={textBoxRef} contentEditable={true} onKeyDown={handleKeyDown} dangerouslySetInnerHTML={{ __html: getDraft() }} />
+                <StyledContent placeholder="Nhấp vào đây để viết nội dung" ref={contentRef} contentEditable={true} onKeyDown={handleKeyDown} dangerouslySetInnerHTML={{ __html: editMode ? article?.content : getDraft() }} />
                 <Form.Item shouldUpdate={true}>
                     {() => (
                         <Button type="primary"
@@ -143,10 +195,13 @@ const NewPost = (props: any) => {
                             onClick={handlePost}
                             loading={posting}
                             disabled={
-                                !form.isFieldsTouched(true) || 
-                                form.getFieldsError().filter(({errors}) => errors.length).length > 0
+                                !editMode && (
+                                    !form.isFieldsTouched(true) ||
+                                    form.getFieldsError().filter(({ errors }) => errors.length).length > 0 ||
+                                    !contentRef.current?.innerHTML?.trim()
+                                )
                             }
-                        >Post</Button>
+                        >{editMode ? "Update" :"Post"}</Button>
                     )}
 
                 </Form.Item>
@@ -154,7 +209,7 @@ const NewPost = (props: any) => {
         </Modal>
     )
 }
-export default withTranslation()(NewPost)
+export default withTranslation()(ArticleModal)
 
 const StyledContent = styled.div<any>`
     width: 100%;

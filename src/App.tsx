@@ -12,6 +12,8 @@ import Test from 'Test'
 import { useRecoilState } from 'recoil'
 import { activeUserState } from 'stores'
 import {io} from './sockets'
+import ArticleModal from '@c/ArticleModal'
+import NewBook from '@c/NewBook'
 // import socket from 'socket.io-client'
 // const ENDPOINT = 'http://localhost:3000'
 // const io = socket.connect(ENDPOINT)
@@ -43,12 +45,14 @@ function App(props) {
 		<LangProvider>
 			<ThemeProvider theme={theme}>
 				<GlobalStyle />
+				<ArticleModal/>
+            	<NewBook/>
 				<Router>
-					<Feed path="/" />
+					<Feed default path="/*" />
 					<Login path="/login" />
 					<Signup path="/signup" />
-					<Profile path="/profile/:name" />
-					<Home default path="/*" />
+					<Profile path="/profile/:username" />
+					{/* <Home path="/*" /> */}
 					<Test path="/test" />
 				</Router>
 

@@ -3,19 +3,25 @@ import React, { useEffect } from 'react'
 import Top from './Top'
 import Content from './Content'
 import FooterArticle from './Footer'
-import { Avatar, Button, Typography, Layout, Row, Col, Card, Space } from 'antd'
-import { RightOutlined, QqOutlined } from '@ant-design/icons'
+import { Avatar, Button, Typography, Layout, Row, Col, Card, Space, Dropdown, Menu, Affix } from 'antd'
+import { RightOutlined, QqOutlined, EllipsisOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { Link } from '@reach/router'
 import { io } from '../../sockets'
 import VisibilitySensor from 'react-visibility-sensor'
 import { pushOrPull } from 'utils'
-import { useRecoilValue } from 'recoil'
-import { activeUserState } from 'stores'
-let a = 0
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { activeUserState, articleModalStatusState, articleModalOpenState } from 'stores'
+import moment from 'moment'
+
+const { Title, Text } = Typography
+
 const Article = (props: any) => {
-    const { Title, Text } = Typography
-    const { article, onUpdate } = props
     const activeUser = useRecoilValue(activeUserState) || {}
+    const setEditModal = useSetRecoilState(articleModalStatusState)
+    const setModalOpen = useSetRecoilState(articleModalOpenState)
+    const { article, onUpdate, onDelete } = props
+    const isOwner = activeUser._id === article.author._id
+
     const handleChangeVisible = isVisible => {
         if (isVisible) {
             io.emit('article-join', {a_id: article._id, a_update: article.updatedAt})
@@ -26,7 +32,7 @@ const Article = (props: any) => {
     const updateLike = (userID = activeUser?._id) => {
         if (userID) {
             const votes = pushOrPull(article.votes, userID)
-            onUpdate({...article, votes, a: a++})
+            onUpdate({...article, votes})
         }   
     }
     const updateComment = (comment) => {
@@ -34,6 +40,14 @@ const Article = (props: any) => {
             const comments = [...article.comments]
             comments.push(comment)
             onUpdate({...article, comments})
+        }
+    }
+    const handleMenuClick = ({item, key}) => {
+        if (key === 'edit') {
+            setEditModal({isEditing: true, article, updateCallback: onUpdate})
+            setModalOpen(true)
+        } else if (key === 'delete') {
+            onDelete()
         }
     }
     useEffect(() => {
@@ -52,10 +66,23 @@ const Article = (props: any) => {
             io.off(`comment-${article._id}`)
         }
     })
+    const menuDropdown = (
+        <Menu onClick={handleMenuClick}>
+            <Menu.Item key="edit" icon={<EditOutlined />}>
+                Edit
+            </Menu.Item>
+            <Menu.Item key="delete" icon={<DeleteOutlined />}>
+                Delete
+            </Menu.Item>
+        </Menu>
+    )
     return (
         <VisibilitySensor onChange={handleChangeVisible} partialVisibility={true}>
             <StyledArticle>
                 <Card>
+                    {isOwner && <Dropdown overlay={menuDropdown} placement="bottomRight" trigger={["click"]}>
+                        <EllipsisOutlined style={{position: 'absolute', right: 8, top: 8}}/>
+                    </Dropdown>}
                     <Row align="middle" gutter={16}>
                         <Col span={16}>
                             <Row align="middle">
@@ -68,7 +95,7 @@ const Article = (props: any) => {
                                     </Link>
                                 </Col>
                                 <Col span={8} style={{ textAlign: "right" }}>
-                                    <Text>50 phút trước</Text>
+                                    <Text>{moment(article.createdAt).fromNow()}</Text>
                                 </Col>
                             </Row>
 

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { withTranslation } from 'react-i18next'
-import NewPost from '../../components/NewPost'
 import {Affix, Button} from 'antd'
 import {PlusOutlined} from '@ant-design/icons'
 import { articleModalOpenState } from 'stores'
@@ -15,7 +14,6 @@ const ActionBar = (props) => {
             <Affix offsetTop={500} style={{position: 'absolute', top: 0, left: 0}}>
                 <Button icon={<PlusOutlined />} size="large" onClick={handleClick}/>
             </Affix>
-            {/* <NewPost open={modal} closePost={() => setModal(false)}/> */}
         </>
     )
 }

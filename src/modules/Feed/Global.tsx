@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import NewPost from '@c/NewPost'
-import Article from '@c/Article'
-import NewBook from '@c/NewBook'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { articleListState, activeUserState } from 'stores'
-import { List } from 'antd'
+import { useRecoilState } from 'recoil'
+import { articleListState } from 'stores'
+import ArticleList from '@c/ArticleList'
+import { navigate } from '@reach/router'
 
 const Global = (props) => {
-    let [articleList, setArticleList] = useRecoilState(articleListState)
-	const setArticle = index => article => {
-        let newList = [...articleList]
-        newList[index] = article
-        setArticleList(newList)
-    }
-
+    const [articleList, setArticleList] = useRecoilState(articleListState)
     const [loading, setLoading] = useState(true)
     useEffect(() => {
         console.info('9779 global mount')
         if (articleList.length === 0) {
             !loading && setLoading(true)
-            fetch("/api/v1/article?populates=[{\"path\":\"author\"},{\"path\":\"book\"}, {\"path\":\"comments\", \"populate\":\"author\"}]", {
+            fetch("/api/v1/article?populates=[{\"path\":\"author\"},{\"path\":\"book\"}, {\"path\":\"comments\", \"populate\":\"author\"}]&order={\"createdAt\": \"desc\"}", {
                 method: "GET",
-            }).then(res => res.json())
+            }).then(res => {
+                if (res.status === 301) {
+                    return navigate("/login")
+                }
+                return res.json()
+            })
             .then(res => {
                 setArticleList(res)
                 setLoading(false)
@@ -36,17 +33,7 @@ const Global = (props) => {
     }, [])
     return (
         <StyledGlobal>
-            <NewPost/>
-            <NewBook/>
-            <List 
-                loading={loading}
-                locale={{ emptyText: () => undefined}}
-                dataSource={articleList}
-                renderItem={(article, index) => (
-                    <Article article={article} onUpdate={setArticle(index)}/>
-
-                )}
-            />
+            <ArticleList list={articleList} setList={setArticleList} loading={loading}/>
         </StyledGlobal>
     )
 }

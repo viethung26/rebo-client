@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import NewPost from '@c/NewPost'
-import Article from '@c/Article'
 import ActionBar from '@m/Layout/ActionBar'
 import Header from '@c/Header'
 import { Affix } from 'antd'
@@ -37,7 +35,7 @@ const Home = (props) => {
                 <div>
                     <Router>
                         <Global path="/" />
-                        <Book path="/book/:name" />
+                        <Book path="/book/:slug" />
                     </Router>
                     {/* <Profile path="/profile/:account"/> */}
                 </div>

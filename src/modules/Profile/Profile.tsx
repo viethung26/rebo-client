@@ -1,11 +1,42 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { Avatar, Typography, Card, Button, Row, Col } from 'antd'
+import { Avatar, Typography, Card, Button, Row, Col, List } from 'antd'
 import {QqOutlined} from '@ant-design/icons'
 import Article from '@c/Article'
+import { useRecoilState } from 'recoil'
+import { myArticlesState } from 'stores'
+import { navigate } from '@reach/router'
 
 const {Title, Text} = Typography
 const Profile = (props) => {
+    const [loading, setLoading] = useState(true)
+    let [articleList, setArticleList] = useRecoilState(myArticlesState)
+    const {username} = props
+	const setArticle = index => article => {
+        let newList = [...articleList]
+        newList[index] = article
+        setArticleList(newList)
+    }
+
+    useEffect(() => {
+            !loading && setLoading(true)
+            fetch(`/api/v1/article/profile/${username}`, {
+                method: "GET",
+            }).then(res => {
+                if (res.status === 301) {
+                    return navigate("/login")
+                }
+                return res.json()
+            })
+            .then(res => {
+                setArticleList(res)
+                setLoading(false)
+            })
+        return function () {
+            console.info('9779 profile feed unmount')
+        }
+    }, [username])
+    
     return (
         <StyledProfile>
             <Card>
@@ -29,8 +60,15 @@ const Profile = (props) => {
                     </Col>
                 </Row>
             </Card>
-            <Article/>
-            <Article/>
+            <List 
+                loading={loading}
+                locale={{ emptyText: () => undefined}}
+                dataSource={articleList}
+                renderItem={(article, index) => (
+                    <Article article={article} onUpdate={setArticle(index)}/>
+
+                )}
+            />
         </StyledProfile>
     )
 }
