@@ -1,21 +1,16 @@
 import React, { useEffect } from 'react'
-import Article from '@c/Article'
+import SaleItem from '@c/SaleItem'
 import { List, Modal, message } from 'antd'
 
-export interface IArticleList {
+export interface ISaleList {
     list:  any[],
     setList: Function
     loading: boolean
 }
 
-const ArticleList = (props: IArticleList) => {
+const SaleList = (props: ISaleList) => {
     let {list, setList, loading} = props
-	const setArticle = index => article => {
-        let newList = [...list]
-        newList[index] = article
-        setList(newList)
-    }
-    const deleteArticle = index => {
+    const deleteSale = index => {
         const {_id} = list[index]
         fetch(`/api/v1/article/${_id}`, {
             method: 'DELETE'
@@ -26,33 +21,31 @@ const ArticleList = (props: IArticleList) => {
                 newList.splice(index, 1)
                 setList(newList)
                 message.success("Delete completely!")
-    
             } else {
                 message.error("Has something wrong!")
             }
-            
         })
     }
     useEffect(() => {
         console.info('9779 list mount')
         return function () {
-            console.info('9779 global unmount')
+            console.info('9779 list unmount')
         }
     }, [])
     return (
         <List 
             loading={loading}
-            locale={{ emptyText: "Chưa có bài viết nào"}}
+            locale={{ emptyText: "Không tìm thấy sách này trên chợ"}}
             dataSource={list}
-            renderItem={(article, index) => (
-                <Article article={article} onUpdate={setArticle(index)} onDelete={() => Modal.confirm({
+            renderItem={(item, index) => (
+                <SaleItem item={item}  onDelete={() => Modal.confirm({
                     title: 'Confirm',
                     content: 'Are you sure you want to delete?',
-                    onOk: () => deleteArticle(index)
+                    onOk: () => deleteSale(index)
                 })}/>
 
             )}
         />
     )
 }
-export default ArticleList
+export default SaleList

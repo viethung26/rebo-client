@@ -20,9 +20,26 @@ const articleModalStatusState = atom({
         updateCallback: null
     }
 })
-//
+
+// categories
+const categoriesState = atom({
+    key: 'categories',
+    default: []
+})
+
+// books
 const bookListState = atom({
     key: 'bookList',
+    default: []
+})
+const recommendBooksState = atom({
+    key: 'recommendBooks',
+    default: []
+})
+
+// market item
+const saleListState = atom({
+    key: 'saleList',
     default: []
 })
 // article state
@@ -38,6 +55,15 @@ const myArticlesState = atom({
     key: 'myArticles',
     default: []
 })
+const trendArticlesState = atom({
+    key: 'trendArticles',
+    default: []
+})
+const interestedArticlesState = atom({
+    key: 'interestedArticles',
+    default: []
+})
+
 // const bookArticlesStateNew = selectorFamily({
 //     key: 'bookArticlesNew',
 //     get: (slug: string) => async() => {
@@ -48,15 +74,36 @@ const myArticlesState = atom({
 //         return result
 //     }
 // })
+// Favorite modal
+const favoriteModalState = atom({
+    key: 'favoriteModal',
+    default: false
+})
 
+const profileSettingModalState = atom({
+    key: 'profileSettingModal',
+    default: false
+})
+const itemModalState = atom({
+    key: 'itemModal',
+    default: false
+})
 
 export {
     articleModalStatusState,
     addBookOpenState,
     bookListState,
+    recommendBooksState,
     articleModalOpenState,
     articleListState,
     activeUserState,
     myArticlesState,
+    trendArticlesState,
+    interestedArticlesState,
     bookArticlesState,
+    categoriesState,
+    saleListState,
+    favoriteModalState,
+    profileSettingModalState,
+    itemModalState
 }

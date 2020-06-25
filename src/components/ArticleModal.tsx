@@ -50,7 +50,6 @@ const ArticleModal = (props: any) => {
     const [status, setStatus] = useRecoilState(articleModalStatusState)
     const [articleOpen, setArticleOpen] = useRecoilState(articleModalOpenState)
     const contentRef = useRef(null)
-    window['abc'] = status
     const { t } = props
     const { Option } = Select
     const {isEditing: editMode, article} = status
@@ -132,7 +131,7 @@ const ArticleModal = (props: any) => {
         }
     }, [status])
     return (
-        <Modal bodyStyle={{ padding: 0 }} title={editMode ? t('Edit Post') : t('New Post')} visible={articleOpen} onOk={closeArticleModal} onCancel={closeArticleModal} width={800} footer={null}>
+        <Modal bodyStyle={{ padding: 0 }} title={editMode ? t('Sửa bài') : t('Đăng bài mới')} visible={articleOpen} onOk={closeArticleModal} onCancel={closeArticleModal} width={800} footer={null}>
             <Form form={form} name="article">
                 <Form.Item
                     name="title"
@@ -143,7 +142,7 @@ const ArticleModal = (props: any) => {
                         }
                     ]}
                 >
-                    <Input addonBefore="Title" disabled={editMode}/>
+                    <Input addonBefore="Tiêu đề" disabled={editMode}/>
                 </Form.Item>
                 <Form.Item
                     name="book"
@@ -160,6 +159,7 @@ const ArticleModal = (props: any) => {
                         notFoundContent={<p onClick={() => setBookOpen(true)}>Thêm vào sách mới</p>}
                         style={{ width: "100%" }}
                         optionLabelProp="label"
+                        optionFilterProp="label"
                         options={bookList.map(book => ({ label: book.title, value: book._id }))}
                         disabled={editMode}
                     />
@@ -197,11 +197,11 @@ const ArticleModal = (props: any) => {
                             disabled={
                                 !editMode && (
                                     !form.isFieldsTouched(true) ||
-                                    form.getFieldsError().filter(({ errors }) => errors.length).length > 0 ||
-                                    !contentRef.current?.innerHTML?.trim()
+                                    form.getFieldsError().filter(({ errors }) => errors.length).length > 0
+                                    // !contentRef.current?.innerHTML?.trim()
                                 )
                             }
-                        >{editMode ? "Update" :"Post"}</Button>
+                        >{editMode ? "Cập nhật" :"Đăng bài"}</Button>
                     )}
 
                 </Form.Item>

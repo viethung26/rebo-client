@@ -1,13 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { withTranslation } from 'react-i18next'
 import {Affix, Button} from 'antd'
 import {PlusOutlined} from '@ant-design/icons'
-import { articleModalOpenState } from 'stores'
-import { useRecoilState } from 'recoil'
 const ActionBar = (props) => {
-    const [modal, setModal] = useRecoilState(articleModalOpenState)
+    const {addFn} = props
     const handleClick = () => {
-        setModal(true)
+        typeof addFn === 'function' && addFn()
     }
     return (
         <>

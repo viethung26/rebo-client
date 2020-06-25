@@ -2,7 +2,7 @@
 const usernameRules = [
     {
         required: true,
-        message: 'Please input your username!'
+        message: 'Vui lòng nhập tên người dùng!'
     },
     {
         pattern: new RegExp("^[a-z]([a-z]|[0-9])*$"),
@@ -21,7 +21,7 @@ const usernameRules = [
 const passwordRules = [
     {
         required: true,
-        message: 'Please input your password!'
+        message: 'Vui lòng nhập mật khẩu!'
     },
     {
         min: 6,
@@ -39,7 +39,7 @@ const passwordRules2 = [
             if (!value || getFieldValue('password') === value) {
                 return Promise.resolve();
             }
-            return Promise.reject('The two passwords that you entered do not match!');
+            return Promise.reject('Mật khẩu bạn nhập không trùng khớp, vui lòng nhập lại!');
         },
     }),
 ]

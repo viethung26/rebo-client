@@ -4,7 +4,7 @@ import Top from './Top'
 import Content from './Content'
 import FooterArticle from './Footer'
 import { Avatar, Button, Typography, Layout, Row, Col, Card, Space, Dropdown, Menu, Affix } from 'antd'
-import { RightOutlined, QqOutlined, EllipsisOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { RightOutlined, QqOutlined, EllipsisOutlined, UserOutlined, EditOutlined, DeleteOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import { Link } from '@reach/router'
 import { io } from '../../sockets'
 import VisibilitySensor from 'react-visibility-sensor'
@@ -20,31 +20,32 @@ const Article = (props: any) => {
     const setEditModal = useSetRecoilState(articleModalStatusState)
     const setModalOpen = useSetRecoilState(articleModalOpenState)
     const { article, onUpdate, onDelete } = props
+    const author = article?.author
     const isOwner = activeUser._id === article.author._id
 
     const handleChangeVisible = isVisible => {
         if (isVisible) {
-            io.emit('article-join', {a_id: article._id, a_update: article.updatedAt})
+            io.emit('article-join', { a_id: article._id, a_update: article.updatedAt })
         } else {
-            io.emit('article-leave', {a_id: article._id})
+            io.emit('article-leave', { a_id: article._id })
         }
     }
     const updateLike = (userID = activeUser?._id) => {
         if (userID) {
             const votes = pushOrPull(article.votes, userID)
-            onUpdate({...article, votes})
-        }   
+            onUpdate({ ...article, votes })
+        }
     }
     const updateComment = (comment) => {
         if (comment) {
             const comments = [...article.comments]
             comments.push(comment)
-            onUpdate({...article, comments})
+            onUpdate({ ...article, comments })
         }
     }
-    const handleMenuClick = ({item, key}) => {
+    const handleMenuClick = ({ item, key }) => {
         if (key === 'edit') {
-            setEditModal({isEditing: true, article, updateCallback: onUpdate})
+            setEditModal({ isEditing: true, article, updateCallback: onUpdate })
             setModalOpen(true)
         } else if (key === 'delete') {
             onDelete()
@@ -81,7 +82,7 @@ const Article = (props: any) => {
             <StyledArticle>
                 <Card>
                     {isOwner && <Dropdown overlay={menuDropdown} placement="bottomRight" trigger={["click"]}>
-                        <EllipsisOutlined style={{position: 'absolute', right: 8, top: 8}}/>
+                        <EllipsisOutlined style={{ position: 'absolute', right: 8, top: 8 }} />
                     </Dropdown>}
                     <Row align="middle" gutter={16}>
                         <Col span={16}>
@@ -104,22 +105,23 @@ const Article = (props: any) => {
                             <Row align="middle" gutter={4}>
                                 <Col span={16}>
                                     <Col>
-                                        <Link to={`/profile/${article?.author?.username || ""}`}>
-                                            <Button type="link">{article?.author?.username}</Button>
+                                        <Link to={`/profile/${author?.username || ""}`}>
+                                            <Button type="link">{author?.displayname || author?.username}</Button>
                                         </Link>
                                     </Col>
                                     <Col>
-                                        <QqOutlined /><Text style={{ paddingLeft: "4px" }}>Super mot</Text>
+                                        <QqOutlined /><Text style={{ paddingLeft: "4px" }}>Người mới</Text>
                                     </Col>
                                 </Col>
                                 <Col span={8} style={{ textAlign: "right" }}>
-                                    <Avatar src="https://i1.wp.com/meovatcuocsong.vn/wp-content/uploads/2018/06/anh-dai-dien-facebook-de-thuong5.jpg?w=770&ssl=1" />
+                                    <Avatar size="large" icon={<UserOutlined />} src={author?.avatar} />
                                 </Col>
                             </Row>
                         </Col>
                     </Row>
                     <Content content={article.content} />
-                    <FooterArticle articleID={article._id} votes={article?.votes} comments={article.comments} onLike={updateLike} onComment={updateComment}/>
+                    <Button icon={<ArrowRightOutlined />} style={{ position: 'absolute', right: 0 }}><Link to={`/market/${article?.book?._id}`}> Đến chợ ngay</Link></Button>
+                    <FooterArticle articleID={article._id} votes={article?.votes} comments={article.comments} onLike={updateLike} onComment={updateComment} />
                 </Card>
                 {/* <Top/> */}
             </StyledArticle>

@@ -2,7 +2,7 @@ import React, { useState, createElement, useEffect } from 'react'
 import styled from 'styled-components'
 import { withTranslation } from 'react-i18next'
 import { Button, Typography, Comment, Avatar, Tooltip, Input, List, Divider } from 'antd'
-import { CommentOutlined, LikeFilled, LikeOutlined } from '@ant-design/icons'
+import { CommentOutlined, LikeFilled, LikeOutlined, UserOutlined } from '@ant-design/icons'
 import { useRecoilValue } from 'recoil'
 import { activeUserState } from 'stores'
 import { io, ioListener } from '../../sockets'
@@ -19,7 +19,7 @@ const getCommentData = (arr: any[]) => {
             </Tooltip>
             {/* <span className="comment-action">{10}</span> */}
         </span>],
-        author: <a href="#">{comment?.author?.username}</a>,
+        author: <a href="#">{comment?.author?.displayname || comment?.author?.username}</a>,
         datetime: <Tooltip title={"ngay"}>
             <span>{moment(comment.updatedAt).fromNow()}</span>
         </Tooltip>,
@@ -27,7 +27,7 @@ const getCommentData = (arr: any[]) => {
             <p>
                 {comment.content}
             </p>,
-        avatar: <Avatar src="https://i1.wp.com/meovatcuocsong.vn/wp-content/uploads/2018/06/anh-dai-dien-facebook-de-thuong5.jpg?w=770&ssl=1" />
+        avatar: <Avatar icon={<UserOutlined />} src={comment?.author?.avatar} />
     }))
 }
 const Footer = (props: any) => {
@@ -54,7 +54,7 @@ const Footer = (props: any) => {
                 setComment("")
                 console.info('9779 post comment', content)
                 io.emit('article-comment', { a_id: articleID, content })
-                onComment({content, article: articleID, author: activeUser, createdAt: new Date().toISOString()})
+                onComment({ content, article: articleID, author: activeUser, createdAt: new Date().toISOString() })
                 // fetch("/api/v1/comment", {
                 //     method: "POST",
                 //     headers: { "Content-Type": "application/json" },
@@ -89,16 +89,16 @@ const Footer = (props: any) => {
                     renderItem={item => (
                         <li>
                             <Comment
-                                actions={
-                                    [<span key="comment-basic-like">
-                                        <Tooltip title="Like">
-                                            {createElement('liked' === 'liked' ? LikeFilled : LikeOutlined, {
-                                                onClick: () => console.info('9779 click'),
-                                            })}
-                                        </Tooltip>
-                                        <span className="comment-action">{10}</span>
-                                    </span>]
-                                }
+                                // actions={
+                                //     [<span key="comment-basic-like">
+                                //         <Tooltip title="Like">
+                                //             {createElement('liked' === 'liked' ? LikeFilled : LikeOutlined, {
+                                //                 onClick: () => console.info('9779 click'),
+                                //             })}
+                                //         </Tooltip>
+                                //         <span className="comment-action">{10}</span>
+                                //     </span>]
+                                // }
                                 author={item.author}
                                 datetime={item.datetime}
                                 content={item.content}
@@ -108,7 +108,7 @@ const Footer = (props: any) => {
                     )}
                 />
                 <Comment
-                    avatar={<Avatar src="https://i1.wp.com/meovatcuocsong.vn/wp-content/uploads/2018/06/anh-dai-dien-facebook-de-thuong5.jpg?w=770&ssl=1" />}
+                    avatar={<Avatar icon={<UserOutlined />} src={activeUser?.avatar} />}
                     content={<Input placeholder="Write your comment" value={comment} onChange={e => setComment(e.target.value)} onKeyDown={handleComment} />}
                 />
             </>

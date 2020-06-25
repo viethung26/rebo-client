@@ -16,7 +16,8 @@ const Book = (props) => {
             method: "GET",
         }).then(res => {
             if (res.status === 301) {
-                return navigate("/login")
+                console.info('9779 res', res)
+                // return navigate("/login")
             } else if (res.status === 404) {
                 return alert("book not found")
             }

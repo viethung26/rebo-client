@@ -1,56 +1,73 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { withTranslation } from 'react-i18next'
-import { Button, Menu, Row, Col, Typography, Badge, Avatar } from 'antd'
-import { BellOutlined } from '@ant-design/icons'
-import Article from '@c/Article'
-import { Link } from '@reach/router'
-const enImage = '/static/en.png'
-const viImage = '/static/vi.png'
-// import viSvg from '@p/UI/vietnam.svg'
+import {  Menu, Row, Col, Typography, Badge, Avatar, Affix, Space } from 'antd'
+import { BellOutlined, GlobalOutlined, HeartOutlined, BookOutlined, ShopOutlined, FireOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons'
+import { Link, useLocation, useParams, navigate } from '@reach/router'
+import { activeUserState } from 'stores'
+import { useSetRecoilState } from 'recoil'
+// const enImage = '/static/en.png'
+// const viImage = '/static/vi.png'
+// // import viSvg from '@p/UI/vietnam.svg'
+
 const { Text, Title } = Typography
 const Header = (props: any) => {
-    const { i18n } = props
-    const [key, setKey] = useState('0')
+    const setActiveUser = useSetRecoilState(activeUserState)
+    const { i18n, user } = props
+    const location = useLocation()
+    const param = useParams()
+    const {pathname} = location
+    const [key, setKey] = useState(pathname)
+    const handleLogout = () => {
+        fetch("api/v1/user/logout").then(res => {
+            if (res.status === 200) {
+                setActiveUser(null)
+                navigate("/login")
+            }
+        })
+    }
     return (
         <StyledHeader gutter={16} justify="center" align="middle">
-            <StyledCol span={6}>
+            <StyledCol xxl={8} xl={6} lg={6} md={2} sm={0} xs={0}>
                 <Link to="/">
                     <Title type="warning">
                         REBO
                     </Title>
                 </Link>
             </StyledCol>
-            <StyledCol span={12}>
+            <StyledCol xxl={8} xl={12} lg={12} md={20} sm={24} xs={24}>
                 <Menu mode="horizontal" selectedKeys={[key]} onSelect={({ item, key }) => setKey(key)}>
-                    <Menu.Item key="0">
-                        <Link to="/">Global</Link>
+                    <Menu.Item key="/">
+                        <Link to="/"><GlobalOutlined style={{fontSize: 20}}/></Link>
                     </Menu.Item>
-                    <Menu.Item key="1">
-                        <Link to="/interested">Interested</Link>
+                    <Menu.Item key="/trend">
+                        <Link to="/trend"><FireOutlined style={{fontSize: 20}}/></Link>
                     </Menu.Item>
-                    <Menu.Item key="2">
-                        Custom
+                    <Menu.Item key="/interested">
+                        <Link to="/interested"><HeartOutlined style={{fontSize: 20}}/></Link>
+                    </Menu.Item>
+                    <Menu.Item key="/books">
+                        <Link to="/books"><BookOutlined style={{fontSize: 20}}/></Link>
+                    </Menu.Item>
+                    <Menu.Item key="/market">
+                        <Link to="/market"><ShopOutlined style={{fontSize: 20}}/></Link>
                     </Menu.Item>
                 </Menu>
             </StyledCol>
-            <StyledCol span={2}>
-                <StyledLang>
-                    {i18n.language === 'vi' ? <Button onClick={() => i18n.changeLanguage('en')}><img src={viImage} alt="vi" /></Button> :
-                        <Button onClick={() => i18n.changeLanguage('vi')}><img src={enImage} alt="en" /></Button>}
-                </StyledLang>
-            </StyledCol>
-            <StyledCol span={2}>
-                <Badge count={3}>
-                    <BellOutlined style={{ fontSize: "32px" }} />
-                </Badge>
-            </StyledCol>
-            <StyledCol span={2}>
-                <Link to="/profile/me">
-                    <StyledLogo>
-                        <Avatar size="large" src="https://i1.wp.com/meovatcuocsong.vn/wp-content/uploads/2018/06/anh-dai-dien-facebook-de-thuong5.jpg?w=770&ssl=1" />
-                    </StyledLogo>
-                </Link>
+
+            <StyledCol xxl={8} xl={6} lg={6} md={2} sm={0} xs={0} style={{textAlign: 'right'}}>
+                <Space>
+                    {/* <Badge count={0}>
+                        <BellOutlined style={{ fontSize: "32px" }} />
+                    </Badge> */}
+                    <Link to={`/profile/${user?.username}`}>
+                        <StyledLogo>
+                            <Avatar size="large" icon={<UserOutlined />} src={user?.avatar} />
+                        </StyledLogo>
+                    </Link>
+                    <LogoutOutlined style={{ fontSize: "32px" }} onClick={handleLogout}/>
+                </Space>
+
 
             </StyledCol>
         </StyledHeader>
@@ -80,7 +97,6 @@ const StyledLogo = styled.div`
     }
 `
 const StyledLang = styled.a`
-    > * {height: 100%}
     img {
         width: 100%;
         height: 100%;

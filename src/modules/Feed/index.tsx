@@ -2,55 +2,36 @@ import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import ActionBar from '@m/Layout/ActionBar'
 import Header from '@c/Header'
-import { Affix } from 'antd'
+import { Affix, Row, Col } from 'antd'
 import { Router } from '@reach/router'
 import Global from '@m/Feed/Global'
 import Book from '@m/Feed/Book'
-import Profile from '@m/Profile/Profile'
-import { useRecoilState } from 'recoil'
-import { bookListState } from 'stores'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { bookListState, categoriesState, activeUserState, articleModalOpenState } from 'stores'
+import Trend from './Trend'
+import Interest from './Interest'
 
 const Home = (props) => {
-    const [bookList, setBookList] = useRecoilState(bookListState)
-    useEffect(() => {
-        if (bookList.length === 0) {
-            fetch("/api/v1/book/", {
-                method: "GET"
-            }).then(res => res.json())
-            .then(res => {
-                setBookList(res)
-            })
-        }
-        return function() {
-            console.info('9779 dismount')
-        }
-    }, [])
+    const activeUser = useRecoilValue(activeUserState) || {}
+    const setArticleModal = useSetRecoilState(articleModalOpenState)
     return (
-        <StyledHome>
+        <>
             <Affix offsetTop={0}>
-                <Header />
+                <Header user={activeUser}/>
             </Affix>
-            <StyledApp>
-                <div />
-                <div>
+            <Row justify="center" align="middle">
+                <Col xxl={8} xl={12} lg={16}>
                     <Router>
                         <Global path="/" />
+                        <Trend path="/trend" />
+                        <Interest path="/interested" />
                         <Book path="/book/:slug" />
                     </Router>
-                    {/* <Profile path="/profile/:account"/> */}
-                </div>
-                <div />
-            </StyledApp>
-            <ActionBar />
-        </StyledHome>
+                </Col>
+
+            </Row>
+            <ActionBar addFn={() => setArticleModal(true)}/>
+        </>
     )
 }
 export default Home
-
-const StyledHome = styled.div``
-
-
-const StyledApp = styled.div`
-	display: grid;
-	grid-template-columns: 1fr 2fr 1fr;
-`

@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Card, Row, Form, Input, Button, Col, Checkbox, Alert } from 'antd'
+import { Card, Row, Form, Input, Button, Col, Checkbox, Alert, Typography } from 'antd'
 import { Link, navigate } from '@reach/router'
 import {usernameRules, passwordRules, passwordRules2} from './formRules'
-const layout = {
-    labelCol: { span: 4 },
-    wrapperCol: { span: 14 },
-}
+import getErrorMessage from 'ErrorMessage'
+
+const {Title, Text} = Typography
+
 const Signup = (props) => {
     const [form] = Form.useForm()
     const [error, setError] = useState("")    
@@ -32,9 +32,9 @@ const Signup = (props) => {
                 if (data) {
                     const {error} = data
                     if (error.code === 800) {
-                        setError("Username was taken")
+                        setError("Tên người dùng đã tồn tại")
                     } else {
-                        setError(error?.message)
+                        setError(getErrorMessage(error?.code))
                     }
                 }
                 
@@ -43,24 +43,25 @@ const Signup = (props) => {
     }
 
     return (
-            <Row justify="center" align="middle">
+            <Row justify="center" align="middle" style={{height: '100%'}}>
                 <Col span={8}>
                     <Card>
+                        <Title>Đăng ký</Title>
                         <Form form={form} name="signup">
                             <Form.Item name="username" rules={usernameRules}
                                 {...( error && { validateStatus: "error", help: error})}
                             >
-                                <Input placeholder="username" value={username} onChange={e => setUsername(e.target.value)} />
+                                <Input placeholder="Tên người dùng" value={username} onChange={e => setUsername(e.target.value)} />
                             </Form.Item>
                             <Form.Item name="password" rules={passwordRules}>
-                                <Input.Password placeholder="password" value={password} onChange={e => setPassword(e.target.value)} />
+                                <Input.Password placeholder="Mật khẩu" value={password} onChange={e => setPassword(e.target.value)} />
                             </Form.Item>
                             <Form.Item name="password2" rules={passwordRules2}>
-                                <Input.Password placeholder="password" value={password2} onChange={e => setPassword2(e.target.value)} />
+                                <Input.Password placeholder="Nhập lại mật khẩu" value={password2} onChange={e => setPassword2(e.target.value)} />
                             </Form.Item>
                             <Form.Item>
                                 <Link to="/login">
-                                    <Button type="link">I already had account</Button>
+                                    <Button type="link">Tôi đã có tài khoản</Button>
                                 </Link>
                             </Form.Item>
                             <Form.Item shouldUpdate={true}>
@@ -71,7 +72,7 @@ const Signup = (props) => {
                                         disabled={
                                             !form.isFieldsTouched(["username", "password", "password2"], true) ||
                                             form.getFieldsError().filter(({ errors }) => errors.length).length > 0
-                                        } onClick={handleSignup}>Signup</Button>
+                                        } onClick={handleSignup}>Đăng ký</Button>
                                 )}
                             </Form.Item>
                         </Form>
