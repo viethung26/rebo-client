@@ -3,6 +3,9 @@ import { Card, Row, Form, Input, Button, Col, Checkbox, Alert, Typography } from
 import { Link, navigate } from '@reach/router'
 import {usernameRules, passwordRules, passwordRules2} from './formRules'
 import getErrorMessage from 'ErrorMessage'
+import { useRecoilState } from 'recoil'
+import { activeUserState } from 'stores'
+import {io} from '../../sockets'
 
 const {Title, Text} = Typography
 
@@ -12,6 +15,8 @@ const Signup = (props) => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [password2, setPassword2] = useState("")
+	const [activeUser, setActiveUser] = useRecoilState(activeUserState)
+
 
     const handleSignup = () => {
         if (form.isFieldsTouched(["username", "password", "password2"], true)) {
@@ -24,18 +29,22 @@ const Signup = (props) => {
             }).then(res => {
                 const {status} = res
                 if (status === 200) {
-                    return navigate("/")
-                } else {
-                    return res.json()
-                }
+                    if (!io.connected) {
+                        io.connect()
+                    }
+                } 
+                return res.json()
             }).then(data => {
-                if (data) {
+                if (data?.error) {
                     const {error} = data
                     if (error.code === 800) {
                         setError("Tên người dùng đã tồn tại")
                     } else {
                         setError(getErrorMessage(error?.code))
                     }
+                } else {
+                    setActiveUser(data)
+                    return navigate("/")
                 }
                 
             })

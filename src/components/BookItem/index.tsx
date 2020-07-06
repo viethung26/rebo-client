@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Avatar, Button, Typography, Layout, Row, Col, Card, Space, Dropdown, Menu, Affix, Rate, Popover, message } from 'antd'
 import { RightOutlined, QqOutlined, EllipsisOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { Link } from '@reach/router'
+import { Link, navigate } from '@reach/router'
 import { io } from '../../sockets'
 import VisibilitySensor from 'react-visibility-sensor'
 import { pushOrPull } from 'utils'
@@ -20,6 +20,10 @@ const BookItem = (props) => {
     const { item } = props
     const isReading = activeUser?.readings?.includes(item._id)
     const isRead = activeUser?.reads?.includes(item._id)
+    let rateStar = item.rates?.reduce((total, rate) => total + rate.star, 0) || 0
+    if (rateStar > 0 && item.rates?.length) {
+        rateStar = rateStar / item.rates.length
+    }
     // const author = item?.author
     // const isOwner = activeUser._id === item.author._id
     const menuDropdown = (
@@ -43,7 +47,6 @@ const BookItem = (props) => {
                 book: item._id
             })
         }).then(res => {
-            console.info('9779 res', res)
             message.success("Đánh giá thành công!")
         })
     }
@@ -75,10 +78,10 @@ const BookItem = (props) => {
                     </Row>
                 </Col>
                 <Col span={24} style={{ textAlign: "center" }}>
-                    <img alt={item.title} height="200" src={item.cover} />
+                    <img onClick={() => { navigate(`/book/${item.slug}`)}} alt={item.title} height="200" src={item.cover} />
                 </Col>
                 <Col span={24} style={{ textAlign: "center" }}>
-                    <Rate disabled value={3} />
+                    <Rate disabled value={rateStar} />
                 </Col>
                 <Col span={24}>
                     <Row align="middle" gutter={4}>

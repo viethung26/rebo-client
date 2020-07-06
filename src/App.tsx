@@ -30,7 +30,7 @@ function App(props) {
 	const [bookList, setBookList] = useRecoilState(bookListState)
 	const [categories, setCategories] = useRecoilState(categoriesState)
 	useEffect(() => {
-		fetch("/api/v1/book/", {
+		fetch("/api/v1/book?populates=[{\"path\":\"rates\" }]", {
 			method: "GET"
 		}).then(res => res.json())
 			.then(res => {

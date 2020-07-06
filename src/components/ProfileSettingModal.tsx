@@ -9,7 +9,7 @@ const ProfileModal = (props) => {
     const [open, setOpen] = useRecoilState(profileSettingModalState)
     const [posting, setPosting] = useState(false)
     const closeModal = () => {
-
+        setOpen(false)
     }
     const handlePost = () => {
         if (form.isFieldsTouched(true) && form.getFieldsError().filter(({ errors }) => errors.length).length === 0) {
@@ -24,9 +24,13 @@ const ProfileModal = (props) => {
                     body: JSON.stringify({ displayname, avatar })
                 }).then(res => {
                     setPosting(false)
+                    if (res.status === 200) {
+                        message.success("Cập nhật thành công!")
+                    } else {
+                        message.success("Cập nhật thất bại!")
+                    }
                     return res.json()
                 }).then(res => {
-                    console.info('9779 res', res)
                     closeModal()
                 })
 

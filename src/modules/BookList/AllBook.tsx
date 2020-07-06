@@ -11,7 +11,7 @@ const AllBook = (props) => {
     const categories = useRecoilValue(categoriesState)
     const [searchKey, setSearchKey] = useState("")
     const [selectCategories, setSelectCategories] = useState([])
-    let filterList = bookList.filter(book => book.title.includes(searchKey))
+    let filterList = bookList.filter(book => book.title.toLowerCase().includes(searchKey.toLowerCase()))
     if (selectCategories.length > 0) {
         filterList = filterList.filter(book => book.categories.some(c => selectCategories.includes(c)))
     }
@@ -38,7 +38,7 @@ const AllBook = (props) => {
                     dataSource={filterList}
                     locale={{ emptyText: "Không tìm thấy cuốn sách nào" }}
                     renderItem={(item, index) => (
-                        <List.Item onClick={() => { navigate(`/book/${item.slug}`) }}>
+                        <List.Item>
                             <BookItem item={item} />
                         </List.Item>
                     )}

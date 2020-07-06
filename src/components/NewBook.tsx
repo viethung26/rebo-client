@@ -34,7 +34,6 @@ const NewBook = (props) => {
                     setPosting(false)
                     return res.json()
                 }).then(res => {
-                    console.info('9779 res', res)
                     closeModal()
                 })
 

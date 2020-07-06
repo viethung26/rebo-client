@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { withTranslation } from 'react-i18next'
 import UIModal from '@p/UI/Modal'
 import UIButton from '@p/UI/Button'
-import { Modal, Button, Input, Select, Form } from 'antd'
+import { Modal, Button, Input, Select, Form, message } from 'antd'
 import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil'
 import { addBookOpenState, bookListState, articleModalOpenState, articleModalStatusState } from 'stores'
 const keyMaps = ["b", "i"]
@@ -87,6 +87,7 @@ const ArticleModal = (props: any) => {
                     removeDraft(editMode)
                     return res.json()
                 }).then(res => {
+                    message.success("Đăng bài thành công!")
                     closeArticleModal()
                 })
             } else {
@@ -106,6 +107,7 @@ const ArticleModal = (props: any) => {
                     if (content && typeof status.updateCallback === 'function') {
                         status.updateCallback({...article, content})
                     }
+                    message.success("Sửa bài thành công!")
                     closeArticleModal()
                 })
             }

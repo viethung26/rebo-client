@@ -4,7 +4,7 @@ import { Avatar, Typography, Card, Button, Row, Col, List } from 'antd'
 import { QqOutlined, UserOutlined } from '@ant-design/icons'
 import Article from '@c/Article'
 import { useRecoilState, useSetRecoilState } from 'recoil'
-import { myArticlesState, profileSettingModalState } from 'stores'
+import { myArticlesState, profileSettingModalState, favoriteModalState } from 'stores'
 import { navigate } from '@reach/router'
 import Header from '@c/Header'
 
@@ -13,6 +13,7 @@ const Profile = (props) => {
     const [loading, setLoading] = useState(true)
     let [articleList, setArticleList] = useRecoilState(myArticlesState)
     const setProfileModal = useSetRecoilState(profileSettingModalState)
+    const setFavoriteModal = useSetRecoilState(favoriteModalState)
     const { username, user } = props
     const [o_user, setO_user] = useState(null)
     const isOwner = o_user ? o_user._id === user?._id : false
@@ -30,6 +31,7 @@ const Profile = (props) => {
         !loading && setLoading(true)
         fetch(`/api/v1/article/profile/${username}`, {
             method: "GET",
+            cache: "no-cache"
         }).then(res => {
             if (res.status === 301) {
                 return navigate("/login")
@@ -50,7 +52,6 @@ const Profile = (props) => {
             return res.json()
         })
             .then(res => {
-                console.info('9779 res', res)
                 setO_user(res[0])
             })
         return function () {
@@ -83,13 +84,19 @@ const Profile = (props) => {
                                 <Button>Đã đọc: {o_user?.reads?.length}</Button>
                             </Col>
                             {isOwner && <Col>
+                                <Button onClick={() => navigate('/books/recommendation')}>Xem đề xuất</Button>
+                            </Col>}
+                            {isOwner && <Col>
+                                <Button onClick={() => setFavoriteModal(true)}>Thể loại ưa thích</Button>
+                            </Col>}
+                            {isOwner && <Col>
                                 <Button onClick={() => setProfileModal(true)}>Thiết lập</Button>
                             </Col>}
                         </Row>
                     </Card>
                     <List
                         loading={loading}
-                        locale={{ emptyText: () => undefined }}
+                        locale={{ emptyText: "Chưa có bài viết nào" }}
                         dataSource={articleList}
                         renderItem={(article, index) => (
                             <Article article={article} onUpdate={setArticle(index)} />

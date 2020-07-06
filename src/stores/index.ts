@@ -45,7 +45,11 @@ const saleListState = atom({
 // article state
 const articleListState = atom({
     key: 'articleList',
-    default: []
+    default: {
+        list: [],
+        page: 0,
+        isEnd: false
+    }
 })
 const bookArticlesState = atom({
     key: 'bookArticles',

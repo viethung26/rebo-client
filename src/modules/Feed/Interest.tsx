@@ -13,15 +13,16 @@ const Interest = (props) => {
             !loading && setLoading(true)
             fetch("/api/v1/article/interest", {
                 method: "GET",
+                cache: "no-cache"
             }).then(res => {
                 if (res.status === 301) {
                     return navigate("/login")
                 }
-                // return res.json()
+                return res.json()
             })
             .then(res => {
                 console.info('9779 res', res)
-                // setArticleList(res)
+                setArticleList(res)
                 setLoading(false)
             })
         } else {

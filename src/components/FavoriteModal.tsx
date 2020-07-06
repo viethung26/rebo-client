@@ -21,7 +21,6 @@ const FavoriteModal = (props) => {
             body: JSON.stringify({ categories: favorites})
         }).then(res => {
             setPosting(false)
-            setOpen(false)
             if (res.status !== 200) {
                 message.error("Cập nhật không thành công, xin vui lòng thử lại!")
             } else {
@@ -30,6 +29,7 @@ const FavoriteModal = (props) => {
             return res.json()
         }).then(res => {
             setActiveUser(res)
+            setOpen(false)
         })
     }
     useEffect(() => {

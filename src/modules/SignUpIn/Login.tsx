@@ -2,14 +2,14 @@ import React, {useState, useEffect } from 'react'
 import { Card, Row, Form, Input, Button, Col, Checkbox , Typography} from 'antd'
 import { Link, navigate } from '@reach/router'
 import { usernameRules, passwordRules } from './formRules'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useSetRecoilState, useRecoilState } from 'recoil'
 import { activeUserState } from 'stores'
 import {io} from '../../sockets'
 import getErrorMessage from 'ErrorMessage'
 
 const {Title, Text} = Typography
 const Login = (props) => {
-	const activeUser = useRecoilValue(activeUserState)
+	const [activeUser, setActiveUser] = useRecoilState(activeUserState)
     
     const [form] = Form.useForm()
     const [error, setError] = useState("")
@@ -29,21 +29,20 @@ const Login = (props) => {
                 },
                 body: JSON.stringify({ username, password })
             }).then(res => {
-                console.info('9779 res', res)
                 const {status} = res
                 if (status === 200) {
-                    console.info('9779 io', io.connected)
                     if (!io.connected) {
                         io.connect()
                     }
-                    return navigate("/")
-                } else {
-                    return res.json()
                 }
+                return res.json()
             }).then(data => {
-                if (data) {
+                if (data?.error) {
                     const {error} = data
                     setError(getErrorMessage(error?.code))
+                } else {
+                    setActiveUser(data)
+                    return navigate("/")
                 }
                 
             })

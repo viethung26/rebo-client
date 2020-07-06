@@ -12,7 +12,7 @@ const SaleList = (props: ISaleList) => {
     let {list, setList, loading} = props
     const deleteSale = index => {
         const {_id} = list[index]
-        fetch(`/api/v1/article/${_id}`, {
+        fetch(`/api/v1/item/${_id}`, {
             method: 'DELETE'
         }).then(res => {
             if (res.status === 200) {
@@ -20,9 +20,9 @@ const SaleList = (props: ISaleList) => {
                 let newList = [...list]
                 newList.splice(index, 1)
                 setList(newList)
-                message.success("Delete completely!")
+                message.success("Xóa thành công!")
             } else {
-                message.error("Has something wrong!")
+                message.error("Xóa không thành công!")
             }
         })
     }
@@ -39,8 +39,10 @@ const SaleList = (props: ISaleList) => {
             dataSource={list}
             renderItem={(item, index) => (
                 <SaleItem item={item}  onDelete={() => Modal.confirm({
-                    title: 'Confirm',
-                    content: 'Are you sure you want to delete?',
+                    title: 'Xác nhận',
+                    content: 'Bạn có chắc muốn xóa?',
+                    okText: 'Đồng ý',
+                    cancelText: 'Hủy bỏ',
                     onOk: () => deleteSale(index)
                 })}/>
 

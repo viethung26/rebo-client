@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 import React, { useEffect } from 'react'
-import Top from './Top'
 import Content from './Content'
 import FooterArticle from './Footer'
 import { Avatar, Button, Typography, Layout, Row, Col, Card, Space, Dropdown, Menu, Affix } from 'antd'
@@ -70,10 +69,10 @@ const Article = (props: any) => {
     const menuDropdown = (
         <Menu onClick={handleMenuClick}>
             <Menu.Item key="edit" icon={<EditOutlined />}>
-                Edit
+                Sửa
             </Menu.Item>
             <Menu.Item key="delete" icon={<DeleteOutlined />}>
-                Delete
+                Xóa
             </Menu.Item>
         </Menu>
     )
@@ -123,7 +122,6 @@ const Article = (props: any) => {
                     <Button icon={<ArrowRightOutlined />} style={{ position: 'absolute', right: 0 }}><Link to={`/market/${article?.book?._id}`}> Đến chợ ngay</Link></Button>
                     <FooterArticle articleID={article._id} votes={article?.votes} comments={article.comments} onLike={updateLike} onComment={updateComment} />
                 </Card>
-                {/* <Top/> */}
             </StyledArticle>
         </VisibilitySensor>
 

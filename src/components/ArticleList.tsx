@@ -25,10 +25,10 @@ const ArticleList = (props: IArticleList) => {
                 let newList = [...list]
                 newList.splice(index, 1)
                 setList(newList)
-                message.success("Delete completely!")
+                message.success("Xóa bài viết thành công!")
     
             } else {
-                message.error("Has something wrong!")
+                message.error("Xóa bài viết không thành công!")
             }
             
         })
@@ -46,8 +46,10 @@ const ArticleList = (props: IArticleList) => {
             dataSource={list}
             renderItem={(article, index) => (
                 <Article article={article} onUpdate={setArticle(index)} onDelete={() => Modal.confirm({
-                    title: 'Confirm',
-                    content: 'Are you sure you want to delete?',
+                    title: 'Xác nhận',
+                    content: 'Bạn chắc chắn muốn xóa bài viết này?',
+                    okText: 'Đồng ý',
+                    cancelText: "Hủy",
                     onOk: () => deleteArticle(index)
                 })}/>
 

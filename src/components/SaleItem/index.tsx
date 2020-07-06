@@ -6,11 +6,6 @@ import { useRecoilValue, } from 'recoil'
 import { activeUserState, articleModalStatusState, articleModalOpenState } from 'stores'
 import moment from 'moment'
 const { Title, Text } = Typography
-const handleMenuClick = ({ item, key }) => {
-    if (key === 'edit') {
-    } else if (key === 'delete') {
-    }
-}
 
 const SaleItem = (props) => {
     const activeUser = useRecoilValue(activeUserState) || {}
@@ -18,11 +13,13 @@ const SaleItem = (props) => {
     const { onDelete, item } = props
     const author = item?.author
     const isOwner = activeUser._id === item.author._id
+    const handleMenuClick = ({ item, key }) => {
+        if (key === 'delete') {
+            onDelete()
+        }
+    }
     const menuDropdown = (
         <Menu onClick={handleMenuClick}>
-            <Menu.Item key="edit" icon={<EditOutlined />}>
-                Edit
-            </Menu.Item>
             <Menu.Item key="delete" icon={<DeleteOutlined />}>
                 Delete
             </Menu.Item>

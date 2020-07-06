@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import React, { useState } from 'react'
 import { withTranslation } from 'react-i18next'
 
-const MAX_CONTENT_LENGTH = 300
+const MAX_CONTENT_LENGTH = 400
 const Content = (props: any) => {
     const [isExpanding, setExpanding] = useState(false)
     const {t} = props
@@ -11,17 +11,26 @@ const Content = (props: any) => {
     }
     let content = props.content || ""
     const isCollapsed = content.length > MAX_CONTENT_LENGTH
-    content = isCollapsed && !isExpanding ? <>{content.substr(0, MAX_CONTENT_LENGTH)} <StyledMore onClick={expand}>{t('article.readmore')}</StyledMore></>: content
+    if (isCollapsed && !isExpanding) {
+        content = content.substr(0, MAX_CONTENT_LENGTH)
+    }
     
     return (
         <StyledContent >
           <p dangerouslySetInnerHTML={{__html: content}}/>
+          {isCollapsed && !isExpanding && <StyledMore onClick={expand}>Xem thêm</StyledMore>}
         </StyledContent>
     )
 }
 export default withTranslation()(Content)
 
-const StyledContent = styled.div``
+const StyledContent = styled.div`
+    img {
+        width: 100%;
+    }
+`
 const StyledMore = styled.a`
-    color: blue;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
 `
