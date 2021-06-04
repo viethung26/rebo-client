@@ -7,6 +7,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 import { myArticlesState, profileSettingModalState, favoriteModalState } from 'stores'
 import { navigate } from '@reach/router'
 import Header from '@c/Header'
+import ArticleList from '@c/ArticleList'
 
 const { Title, Text } = Typography
 const Profile = (props) => {
@@ -94,15 +95,22 @@ const Profile = (props) => {
                             </Col>}
                         </Row>
                     </Card>
-                    <List
+                    {/* <List
                         loading={loading}
                         locale={{ emptyText: "Chưa có bài viết nào" }}
                         dataSource={articleList}
                         renderItem={(article, index) => (
-                            <Article article={article} onUpdate={setArticle(index)} />
+                            <Article article={article} onUpdate={setArticle(index)} onDelete={() => Modal.confirm({
+                                title: 'Xác nhận',
+                                content: 'Bạn chắc chắn muốn xóa bài viết này?',
+                                okText: 'Đồng ý',
+                                cancelText: "Hủy",
+                                onOk: () => deleteArticle(index)
+                            })}/>/>
 
                         )}
-                    />
+                    /> */}
+                    <ArticleList list={articleList} setList={setArticleList} loading={loading} />
                 </Col>
 
             </Row>

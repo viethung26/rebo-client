@@ -55,7 +55,7 @@ const Market = (props) => {
                     <Space direction="vertical">
                         <Select
                             placeholder="Tìm sách..."
-                            showSearch
+                            showSearch allowClear
                             notFoundContent={<p onClick={() => setBookOpen(true)}>Thêm vào sách mới</p>}
                             style={{ width: "100%" }}
                             optionLabelProp="label"

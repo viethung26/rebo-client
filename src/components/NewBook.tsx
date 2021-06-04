@@ -16,20 +16,21 @@ const NewBook = (props) => {
     const { Option } = Select
 
     const closeModal = () => {
-
+        setOpen(false)
     }
     const handlePost = () => {
         if (form.isFieldsTouched(true) && form.getFieldsError().filter(({ errors }) => errors.length).length === 0) {
             const title = form.getFieldValue("title")
             const author = form.getFieldValue("author")
             const types = [form.getFieldValue("type")]
+            const cover = form.getFieldValue("cover")
             setPosting(true)
                 fetch("/api/v1/book", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ title, author, categories: types })
+                    body: JSON.stringify({ title, author, categories: types, cover })
                 }).then(res => {
                     setPosting(false)
                     return res.json()
@@ -45,8 +46,8 @@ const NewBook = (props) => {
         setFile(file)
     }
     return (
-        <Modal bodyStyle={{ padding: 0 }} title={t('Add new book')} visible={open} onOk={() => setOpen(false)} onCancel={() => setOpen(false)} width={800} footer={null}>
-            <Alert message="Cảm ơn sự đóng góp của bạn, bạn sẽ nhận được danh hiệu khi sách được kiểm duyệt" type="warning" />
+        <Modal bodyStyle={{ padding: 0 }} title={t('Thêm sách mới')} visible={open} onOk={() => setOpen(false)} onCancel={() => setOpen(false)} width={800} footer={null}>
+            {/* <Alert message="Cảm ơn sự đóng góp của bạn, bạn sẽ nhận được danh hiệu khi sách được kiểm duyệt" type="warning" /> */}
             <Form form={form} name="article">
                 <Form.Item
                     name="title"
@@ -57,7 +58,7 @@ const NewBook = (props) => {
                         }
                     ]}
                 >
-                    <Input addonBefore="Title" />
+                    <Input addonBefore="Tiêu đề" />
                 </Form.Item>
                 <Form.Item
                     name="author"
@@ -68,7 +69,7 @@ const NewBook = (props) => {
                         }
                     ]}
                 >
-                    <Input addonBefore="Author" />
+                    <Input addonBefore="Tác giả" />
                 </Form.Item>
                 <Form.Item
                     name="type"
@@ -88,12 +89,23 @@ const NewBook = (props) => {
                         options={categories.map(category => ({ label: category.name, value: category._id }))}
                     />
                 </Form.Item>
-                <input type="file" id="coverFile" name="coverFile" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
+                <Form.Item
+                    name="cover"
+                    rules={[
+                        {
+                            required: true,
+                            message: "Không được để trống tác giả"
+                        }
+                    ]}
+                >
+                    <Input addonBefore="Ảnh bìa" />
+                </Form.Item>
+                {/* <input type="file" id="coverFile" name="coverFile" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
                 <Button disabled={true}>
                     <label htmlFor="coverFile">
                         <UploadOutlined /> Upload cover
                             </label>
-                </Button>
+                </Button> */}
                 {/* <Input type="file" onChange={e => console.info('9779 file', e)}/> */}
                 {/* <Upload {...uploadProps}>
                     <Button>
@@ -111,7 +123,7 @@ const NewBook = (props) => {
                                 !form.isFieldsTouched(true) ||
                                 form.getFieldsError().filter(({ errors }) => errors.length).length > 0
                             }
-                        >Add Book</Button>
+                        >Thêm sách</Button>
                     )}
                 </Form.Item>
             </Form>

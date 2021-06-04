@@ -19,6 +19,7 @@ const Article = (props: any) => {
     const setEditModal = useSetRecoilState(articleModalStatusState)
     const setModalOpen = useSetRecoilState(articleModalOpenState)
     const { article, onUpdate, onDelete } = props
+    console.log(9779, article, onDelete)
     const author = article?.author
     const isOwner = activeUser._id === article.author._id
 
